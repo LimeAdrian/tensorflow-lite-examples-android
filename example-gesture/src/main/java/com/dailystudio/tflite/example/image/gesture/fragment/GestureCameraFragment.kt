@@ -1,5 +1,6 @@
 package com.dailystudio.tflite.example.image.gesture.fragment
 
+import android.content.Context
 import android.graphics.Bitmap
 import androidx.camera.core.CameraSelector
 import com.dailystudio.devbricksx.GlobalContextWrapper
@@ -110,7 +111,12 @@ private class GestureAnalyzer(rotation: Int, lensFacing: Int)
 
 class GestureCameraFragment : AbsExampleCameraFragment<ImageInferenceInfo, List<Classifier.Recognition>>() {
 
-    override fun createAnalyzer(screenAspectRatio: Int, rotation: Int, lensFacing: Int)
+    override fun createAnalyzer(
+        screenAspectRatio: Int,
+        rotation: Int,
+        lensFacing: Int,
+        requireContext: Context
+    )
             : AbsImageAnalyzer<ImageInferenceInfo, List<Classifier.Recognition>> {
         return GestureAnalyzer(
             rotation,

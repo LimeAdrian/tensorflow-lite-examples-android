@@ -1,8 +1,6 @@
 package com.dailystudio.tflite.example.image.styletransfer.fragment
 
-import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.util.Size
@@ -133,7 +131,12 @@ class StyleTransferCameraFragment : AbsExampleCameraFragment<AdvanceInferenceInf
         })
     }
 
-    override fun createAnalyzer(screenAspectRatio: Int, rotation: Int, lensFacing: Int)
+    override fun createAnalyzer(
+        screenAspectRatio: Int,
+        rotation: Int,
+        lensFacing: Int,
+        requireContext: Context
+    )
             : AbsImageAnalyzer<AdvanceInferenceInfo, StyleTransferResult> {
         return StyleTransferAnalyzer(rotation, lensFacing)
     }

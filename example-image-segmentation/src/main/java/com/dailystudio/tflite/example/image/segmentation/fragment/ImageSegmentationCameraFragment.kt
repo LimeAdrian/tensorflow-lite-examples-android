@@ -1,5 +1,6 @@
 package com.dailystudio.tflite.example.image.segmentation.fragment
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.util.Size
@@ -105,7 +106,12 @@ private class ImageSegmentationAnalyzer(rotation: Int, lensFacing: Int)
 
 class ImageSegmentationCameraFragment : AbsExampleCameraFragment<AdvanceInferenceInfo, SegmentationResult>() {
 
-    override fun createAnalyzer(screenAspectRatio: Int, rotation: Int, lensFacing: Int)
+    override fun createAnalyzer(
+        screenAspectRatio: Int,
+        rotation: Int,
+        lensFacing: Int,
+        requireContext: Context
+    )
             : AbsImageAnalyzer<AdvanceInferenceInfo, SegmentationResult> {
         return ImageSegmentationAnalyzer(rotation, lensFacing)
     }

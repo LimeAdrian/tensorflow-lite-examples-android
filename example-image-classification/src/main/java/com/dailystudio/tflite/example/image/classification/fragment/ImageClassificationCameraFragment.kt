@@ -1,5 +1,6 @@
 package com.dailystudio.tflite.example.image.classification.fragment
 
+import android.content.Context
 import android.graphics.Bitmap
 import com.dailystudio.devbricksx.GlobalContextWrapper
 import com.dailystudio.devbricksx.development.Logger
@@ -111,7 +112,12 @@ private class ImageClassificationAnalyzer(rotation: Int, lensFacing: Int)
 
 class ImageClassificationCameraFragment : AbsExampleCameraFragment<ImageInferenceInfo, List<Recognition>>() {
 
-    override fun createAnalyzer(screenAspectRatio: Int, rotation: Int, lensFacing: Int): AbsImageAnalyzer<ImageInferenceInfo, List<Recognition>> {
+    override fun createAnalyzer(
+        screenAspectRatio: Int,
+        rotation: Int,
+        lensFacing: Int,
+        requireContext: Context
+    ): AbsImageAnalyzer<ImageInferenceInfo, List<Recognition>> {
         return ImageClassificationAnalyzer(rotation, lensFacing)
     }
 

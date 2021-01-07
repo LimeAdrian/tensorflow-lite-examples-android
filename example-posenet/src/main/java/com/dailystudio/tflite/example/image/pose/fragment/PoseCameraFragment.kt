@@ -1,5 +1,6 @@
 package com.dailystudio.tflite.example.image.pose.fragment
 
+import android.content.Context
 import android.graphics.*
 import com.dailystudio.devbricksx.GlobalContextWrapper
 import com.dailystudio.devbricksx.development.Logger
@@ -214,9 +215,12 @@ class PoseAnalyzer(rotation: Int, lensFacing: Int) : AbsImageAnalyzer<ImageInfer
 
 class PoseCameraFragment : AbsExampleCameraFragment<ImageInferenceInfo, Person>() {
 
-    override fun createAnalyzer(screenAspectRatio: Int,
-                                rotation: Int,
-                                lensFacing: Int): AbsImageAnalyzer<ImageInferenceInfo, Person> {
+    override fun createAnalyzer(
+        screenAspectRatio: Int,
+        rotation: Int,
+        lensFacing: Int,
+        requireContext: Context
+    ): AbsImageAnalyzer<ImageInferenceInfo, Person> {
         return PoseAnalyzer(rotation, lensFacing)
     }
 

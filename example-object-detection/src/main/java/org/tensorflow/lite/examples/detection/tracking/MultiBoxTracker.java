@@ -22,6 +22,7 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.graphics.PorterDuff;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.text.TextUtils;
 import android.util.Pair;
@@ -119,12 +120,39 @@ public class MultiBoxTracker {
 
     canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
 
+
+
+ /*
+   RectF r = new RectF();
+    r.set(0, 0, 200, 200);
     frameToCanvasMatrix = MatrixUtils.INSTANCE.getTransformationMatrix(
             frameWidth, frameHeight, canvasWidth, canvasHeight, sensorOrientation, true, false);
+   getFrameToCanvasMatrix().mapRect(r);
+    boxPaint.setColor(Color.BLACK);
+
+    float cornerSize = Math.min(r.width(), r.height()) / 20.0f;
+    canvas.drawRoundRect(r, 0f, 0f, boxPaint);
+
+    final String labelString =
+            !TextUtils.isEmpty("title")
+                    ? String.format("%s %.2f", "title", (100 * 0.99999))
+                    : String.format("%.2f", (100 * 0.99999));
+    //            borderedText.drawText(canvas, trackedPos.left + cornerSize, trackedPos.top,
+    // labelString);
+    borderedText.drawText(
+            canvas, r.left + cornerSize, r.top, labelString + "%", boxPaint);
+
+*/
+
+
+
+
 
     for (final TrackedRecognition recognition : trackedObjects) {
       final RectF trackedPos = new RectF(recognition.location);
 
+      frameToCanvasMatrix = getTransformationMatrix(
+              frameWidth, frameHeight, canvasWidth, canvasHeight, 90, false);
       getFrameToCanvasMatrix().mapRect(trackedPos);
       boxPaint.setColor(recognition.color);
 
@@ -140,6 +168,73 @@ public class MultiBoxTracker {
       borderedText.drawText(
               canvas, trackedPos.left + cornerSize, trackedPos.top, labelString + "%", boxPaint);
     }
+
+
+
+
+  }
+
+
+  /**
+   * Returns a transformation matrix from one reference frame into another. Handles cropping (if
+   * maintaining aspect ratio is desired) and rotation.
+   *
+   * @param srcWidth Width of source frame.
+   * @param srcHeight Height of source frame.
+   * @param dstWidth Width of destination frame.
+   * @param dstHeight Height of destination frame.
+   * @param applyRotation Amount of rotation to apply from one frame to another. Must be a multiple
+   *     of 90.
+   * @param maintainAspectRatio If true, will ensure that scaling in x and y remains constant,
+   *     cropping the image if necessary.
+   * @return The transformation fulfilling the desired requirements.
+   */
+  public static Matrix getTransformationMatrix(
+          final int srcWidth,
+          final int srcHeight,
+          final int dstWidth,
+          final int dstHeight,
+          final int applyRotation,
+          final boolean maintainAspectRatio) {
+    final Matrix matrix = new Matrix();
+
+    if (applyRotation != 0) {
+      // Translate so center of image is at origin.
+      matrix.postTranslate(-srcWidth / 2.0f, -srcHeight / 2.0f);
+
+      // Rotate around origin.
+      matrix.postRotate(applyRotation);
+    }
+
+    // Account for the already applied rotation, if any, and then determine how
+    // much scaling is needed for each axis.
+    final boolean transpose = (Math.abs(applyRotation) + 90) % 180 == 0;
+
+    final int inWidth = transpose ? srcHeight : srcWidth;
+    final int inHeight = transpose ? srcWidth : srcHeight;
+
+    // Apply scaling if necessary.
+    if (inWidth != dstWidth || inHeight != dstHeight) {
+      final float scaleFactorX = dstWidth / (float) inWidth;
+      final float scaleFactorY = dstHeight / (float) inHeight;
+
+      if (maintainAspectRatio) {
+        // Scale by minimum factor so that dst is filled completely while
+        // maintaining the aspect ratio. Some image may fall off the edge.
+        final float scaleFactor = Math.max(scaleFactorX, scaleFactorY);
+        matrix.postScale(scaleFactor, scaleFactor);
+      } else {
+        // Scale exactly to fill dst from src.
+        matrix.postScale(scaleFactorX, scaleFactorY);
+      }
+    }
+
+    if (applyRotation != 0) {
+      // Translate back from origin centered reference to destination frame.
+      matrix.postTranslate(dstWidth / 2.0f, dstHeight / 2.0f);
+    }
+
+    return matrix;
   }
 
   private void processResults(final List<Recognition> results) {

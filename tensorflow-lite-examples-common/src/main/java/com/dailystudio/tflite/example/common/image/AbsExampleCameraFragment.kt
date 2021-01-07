@@ -1,5 +1,6 @@
 package com.dailystudio.tflite.example.common.image
 
+import android.content.Context
 import android.os.Bundle
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.UseCase
@@ -54,7 +55,7 @@ abstract class AbsExampleCameraFragment<Info: ImageInferenceInfo, Results> : Cam
             .setTargetRotation(rotation)
             .build()
             .also {
-                val analyzer = createAnalyzer(screenAspectRatio, rotation, lensFacing)
+                val analyzer = createAnalyzer(screenAspectRatio, rotation, lensFacing, requireContext())
 
                 this.analyzer = analyzer
                 
@@ -70,9 +71,12 @@ abstract class AbsExampleCameraFragment<Info: ImageInferenceInfo, Results> : Cam
         return R.layout.fragment_example
     }
 
-    abstract fun createAnalyzer(screenAspectRatio: Int,
-                                rotation: Int,
-                                lensFacing: Int): AbsImageAnalyzer<Info, Results>
+    abstract fun createAnalyzer(
+        screenAspectRatio: Int,
+        rotation: Int,
+        lensFacing: Int,
+        requireContext: Context
+    ): AbsImageAnalyzer<Info, Results>
 
     fun getCurrentLensFacing(): Int {
         return lensFacing
